@@ -52,11 +52,9 @@ def clear():
     llm = LanguageModelProcessor()  # re-initialize your LLM instance
     return jsonify({"status": "cleared"})
 
-app.route("/")
+@app.route("/")
 def index():
     return render_template("index.html")
 
-
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # Use PORT env var if available
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=10000)
