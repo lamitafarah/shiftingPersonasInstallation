@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TTS Visualizer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/addons/p5.sound.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+
+  </head>
+  <body>
+    
+    <!-- Flex container for canvas and chat -->
+<div style="display: flex; gap: 30px;" class="container">
+
+  <!-- Canvas container -->
+  <div id="canva"></div>
+
+  <!-- Chat + controls container -->
+  <div style="display: flex; flex-direction: column; height: 100%;">
+    
+    <!-- Chat box -->
+    <div id="chatContainer"></div>
+
+    <!-- Clear button aligned bottom right -->
+    <div style="flex-grow: 1; display: flex; justify-content: flex-end; align-items: flex-end;">
+      <button onclick="clearChat()" class="clear-button">Clear Chat</button>
+    </div>
+
+    <!-- Talk button centered below all -->
+    <div style="margin-top: 40px; display: flex; justify-content: center;">
+      <button onclick="startListening()" class="talk-button"></button>
+    </div>
+
+  </div>
+</div>
+
+
+
+    <script>
+
+     let recognition;
+    if ('webkitSpeechRecognition' in window) {
+      recognition = new webkitSpeechRecognition();
+    } else {
+      alert("Speech recognition not supported in this browser.");
+    }
+
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-US';
+
+    recognition.onresult = async function(event) {
+      const userText = event.results[0][0].transcript;
+      addMessage(userText, 'user');
+
+      const res = await fetch('http://127.0.0.1:5000/chat', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({text: userText})
+      });
+      const data = await res.json();
+      addMessage(data.response, 'llm');
+      playTTS(data.response);
+    };
+
+    recognition.onerror = function(event) {
+      console.error("Speech recognition error:", event);
+    };
+
+    function startListening() {
+      recognition.start();
+    }
+
+    function addMessage(text, sender) {
+  const container = document.getElementById('chatContainer');
+  const messageDiv = document.createElement('div');
+  messageDiv.textContent = text;
+
+  if (sender === 'user') {
+    messageDiv.className = 'user-message';
+  } else {
+    messageDiv.className = 'llm-message';
+  }
+
+  container.appendChild(messageDiv);
+  container.scrollTop = container.scrollHeight;
+}
+
+
+  
+
+async function clearChat() {
+  try {
+    const res = await fetch('http://127.0.0.1:5000/clear', {
+      method: 'POST',
+    });
+    if (!res.ok) {
+      throw new Error('Network response was not OK');
+    }
+    const data = await res.json();
+    if (data.status === "cleared") {
+      document.getElementById('chatContainer').innerHTML = '';
+      console.log("Chat cleared!");
+    }
+  } catch (err) {
+    console.error("Failed to clear chat:", err);
+  }
+}
+
+
+let amplitude, sound;
+let scale = 30;
+let resolution = 0.002;
+let numPoints = 100;
+let numRings = 5;
+
+let zoff = 0;
+
+let amp;
+let volume = 0;
+let smoothedVolume = 0;
+
+function playTTS(text) {
+  if (sound && sound.isPlaying()) {
+    sound.stop();
+  }
+  sound = loadSound(`http://127.0.0.1:5000/tts?text=${encodeURIComponent(text)}`, () => {
+    sound.play();
+    amplitude.setInput(sound);
+  });
+}
+
+async function sendChat() {
+  const text = document.getElementById('textInput').value;
+  const res = await fetch('http://127.0.0.1:5000/chat', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({text})
+  });
+  const data = await res.json();
+  document.getElementById('llmResponse').innerText = data.response;
+  playTTS(data.response);
+}
+
+function setup() {
+  let cnv = createCanvas(800, 800);
+  cnv.parent("canva");  // attach to the #canva div
+  angleMode(DEGREES) ;
+  amplitude = new p5.Amplitude();
+}
+
+function draw() {
+//   background(220);
+  background(10);
+
+    let gradientColors = [
+    // color(70, 130, 255),
+    color(150, 80, 255),
+    color(0,255,200)
+  ];
+  let level = 0;
+
+  noFill() ;
+  strokeWeight(2.5) ;
+  translate( width/2,  height/2 ) ; 
+  rotate(90);
+
+  for (let v = 0; v <= 50; v += 15) {
+  
+  beginShape();
+  stroke(lerpColor(gradientColors[0], gradientColors[1], v / 100));
+//   if (amplitude && sound && sound.isPlaying()) {
+    level = amplitude.getLevel();
+    smoothedVolume = lerp(smoothedVolume, level, 0.03);
+    let size = map(smoothedVolume, 0, 1, 1, 20);
+    // ellipse(width/2, height/2, size, size);
+
+    for (let i = 0; i < 359; i++) {
+    let baseR = map(sin(i * 5), -1, 1, 80, 100);
+
+    let r = (baseR + v) * size; // Expand the radius linearly
+    
+    
+    let x = r * cos(i) ;
+    let y = r * sin(i) ;
+
+      let n = map(noise(x * resolution, y * resolution, zoff), 0, 1, -    scale, scale);
+   
+      curveVertex(x + n, y + n);
+    // vertex(x, y);
+  }
+  endShape(CLOSE);
+}
+ zoff += 0.006;
+}
+//   } else {
+//     ellipse(width/2, height/2, 20, 20);
+//   }
+
+// }
+  // Print to console
+//   console.log("Amplitude:", level);
+//   // Show on canvas
+//   fill(0);
+//   textSize(24);
+//   textAlign(CENTER, CENTER);
+//   text("Amplitude: " + nf(level, 1, 4), width/2, height - 40);
+// }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,103 @@
+/* General page styling */
+body {
+  margin: 0;
+  padding: 20px;
+  background-color: #0a0a0a;
+  font-family: 'Arial', sans-serif;
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  height: 100vh;
+}
+
+/* Flex container */
+.container {
+  display: flex;
+  gap: 30px;
+}
+
+/* Canvas container */
+#canva {
+  width: 800px;
+  height: 800px;
+}
+
+/* Chat container styling */
+#chatContainer {
+  width: 400px;
+  height: 500px;
+  overflow-y: auto;
+  margin-top: 50px;
+  border: 1px solid #0a0a0a;
+  background-color: transparent;
+  padding: 10px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Messages */
+#chatContainer div {
+  display: inline-block;
+  padding: 8px 12px;
+  max-width: 70%;
+  word-wrap: break-word;
+}
+
+/* User messages */
+.user-message {
+  background-color: #d9e6da;
+  color: #0a0a0a;
+  margin-top: 10px;
+  margin-left: auto;
+  text-align: right;
+  border-radius: 15px 15px 0px 15px;
+  padding: 8px 12px;
+}
+
+/* LLM messages */
+.llm-message {
+  background-color: #9650ff8e;
+  color: #eee;
+  margin-right: auto;
+  margin-top: 10px;
+  text-align: left;
+  border-radius: 15px 15px 15px 0px;
+  padding: 8px 12px;
+}
+
+/* Buttons */
+button {
+  padding: 8px 8px;
+  background-color: transparent;
+  color: #fff;
+  border: 1px solid #fff;
+  border-radius: 40px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #444;
+}
+
+/* Talk button – circular with image */
+.talk-button {
+  background-image: url("mic.png");
+  background-size: cover;
+  background-position: center;
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  border: 1px solid #fff;
+  margin-top: 10px;
+}
+
+/* Clear button */
+.clear-button {
+  margin-top: 20px;
+}
+
+.talk-button:hover {
+  box-shadow: 0 4px 12px rgba(150, 80, 255, 0.653);
+}
