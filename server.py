@@ -52,9 +52,9 @@ def clear():
     llm = LanguageModelProcessor()  # re-initialize your LLM instance
     return jsonify({"status": "cleared"})
 
-@app.route("/")
+app.route("/")
 def index():
-    return send_from_directory(".", "index.html")
+    return render_template("index.html")
 
 
 if __name__ == "__main__":
