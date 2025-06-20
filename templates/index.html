@@ -39,64 +39,54 @@
     <script>
 
      let recognition;
-    if ('webkitSpeechRecognition' in window) {
-      recognition = new webkitSpeechRecognition();
-    } else {
-      alert("Speech recognition not supported in this browser.");
-    }
+if ('webkitSpeechRecognition' in window) {
+  recognition = new webkitSpeechRecognition();
+} else {
+  alert("Speech recognition not supported in this browser.");
+}
 
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.lang = 'en-US';
+recognition.continuous = false;
+recognition.interimResults = false;
+recognition.lang = 'en-US';
 
-    recognition.onresult = async function(event) {
-      const userText = event.results[0][0].transcript;
-      addMessage(userText, 'user');
+recognition.onresult = async function(event) {
+  const userText = event.results[0][0].transcript;
+  addMessage(userText, 'user');
 
-      const res = await fetch('http://127.0.0.1:5000/chat', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({text: userText})
-      });
-      const data = await res.json();
-      addMessage(data.response, 'llm');
-      playTTS(data.response);
-    };
+  const res = await fetch('https://shiftingpersonasinstallation.onrender.com/chat', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text: userText })
+  });
 
-    recognition.onerror = function(event) {
-      console.error("Speech recognition error:", event);
-    };
+  const data = await res.json();
+  addMessage(data.response, 'llm');
+  playTTS(data.response);
+};
 
-    function startListening() {
-      recognition.start();
-    }
+recognition.onerror = function(event) {
+  console.error("Speech recognition error:", event);
+};
 
-    function addMessage(text, sender) {
+function startListening() {
+  recognition.start();
+}
+
+function addMessage(text, sender) {
   const container = document.getElementById('chatContainer');
   const messageDiv = document.createElement('div');
   messageDiv.textContent = text;
-
-  if (sender === 'user') {
-    messageDiv.className = 'user-message';
-  } else {
-    messageDiv.className = 'llm-message';
-  }
-
+  messageDiv.className = sender === 'user' ? 'user-message' : 'llm-message';
   container.appendChild(messageDiv);
   container.scrollTop = container.scrollHeight;
 }
 
-
-  
-
 async function clearChat() {
   try {
-    const res = await fetch('http://127.0.0.1:5000/clear', {
-      method: 'POST',
+    const res = await fetch('https://shiftingpersonasinstallation.onrender.com/clear', {
+      method: 'POST'
     });
-    if (!res.ok) {
-      throw new Error('Network response was not OK');
-    }
+    if (!res.ok) throw new Error('Network response was not OK');
     const data = await res.json();
     if (data.status === "cleared") {
       document.getElementById('chatContainer').innerHTML = '';
@@ -106,6 +96,7 @@ async function clearChat() {
     console.error("Failed to clear chat:", err);
   }
 }
+
 
 
 let amplitude, sound;
@@ -124,7 +115,7 @@ function playTTS(text) {
   if (sound && sound.isPlaying()) {
     sound.stop();
   }
-  sound = loadSound(`http://127.0.0.1:5000/tts?text=${encodeURIComponent(text)}`, () => {
+  sound = loadSound(`https://shiftingpersonasinstallation.onrender.com/tts?text=${encodeURIComponent(text)}`, () => {
     sound.play();
     amplitude.setInput(sound);
   });
@@ -132,7 +123,7 @@ function playTTS(text) {
 
 async function sendChat() {
   const text = document.getElementById('textInput').value;
-  const res = await fetch('http://127.0.0.1:5000/chat', {
+  const res = await fetch('https://shiftingpersonasinstallation.onrender.com/chat', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({text})
