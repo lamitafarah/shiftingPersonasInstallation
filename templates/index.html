@@ -69,8 +69,24 @@ recognition.onerror = function(event) {
 };
 
 function startListening() {
-  recognition.start();
+  const button = document.querySelector('.talk-button');
+
+      recognition.start();
+      
+    
+    button.style.borderColor = 'rgb(150, 80, 255)';      
+    button.style.borderWidth = '2px';      
+    button.style.borderStyle = 'solid';  
 }
+ // Remove border when recognition ends
+  recognition.onend = function () {
+  const button = document.querySelector('.talk-button');
+
+  button.style.borderColor = 'white';      
+  button.style.borderWidth = '1px';      
+  button.style.borderStyle = 'solid';    
+
+};
 
 function addMessage(text, sender) {
   const container = document.getElementById('chatContainer');
