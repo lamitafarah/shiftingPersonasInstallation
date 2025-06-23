@@ -16,7 +16,7 @@
   <div id="canva"></div>
 
   <!-- Chat + controls container -->
-  <div style="display: flex; flex-direction: column; height: 100%;">
+  <div id='chatBox' style="display: flex; flex-direction: column; height: 100%;">
     
     <!-- Chat box -->
     <div id="chatContainer"></div>
@@ -96,7 +96,9 @@ function addMessage(text, sender) {
   container.appendChild(messageDiv);
   container.scrollTop = container.scrollHeight;
 }
-
+document.addEventListener("DOMContentLoaded", function () {
+  addMessage("Let's have a chat", 'llm');
+});
 async function clearChat() {
   try {
     const res = await fetch('https://shiftingpersonasinstallation.onrender.com/clear', {
@@ -111,6 +113,7 @@ async function clearChat() {
   } catch (err) {
     console.error("Failed to clear chat:", err);
   }
+  addMessage("Let's have a chat", 'llm');
 }
 
 
