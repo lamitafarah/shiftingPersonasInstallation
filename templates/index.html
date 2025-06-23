@@ -69,14 +69,14 @@ recognition.onerror = function(event) {
 };
 
 function startListening() {
-  const button = document.querySelector('.talk-button');
+const button = document.querySelector('.talk-button');
 
-      recognition.start();
+recognition.start();
       
     
-    button.style.borderColor = 'rgb(150, 80, 255)';      
-    button.style.borderWidth = '2px';      
-    button.style.borderStyle = 'solid';  
+button.style.borderColor = 'rgb(150, 80, 255)';      
+button.style.borderWidth = '2px';      
+button.style.borderStyle = 'solid';  
 }
  // Remove border when recognition ends
   recognition.onend = function () {
