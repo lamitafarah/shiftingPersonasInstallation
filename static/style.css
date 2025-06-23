@@ -28,11 +28,9 @@ body {
   width: 400px;
   height: 500px;
   overflow-y: auto;
-  margin-top: 50px;
-  border: 1px solid #0a0a0a;
+  margin-top: 10px;
   background-color: transparent;
   padding: 10px;
-  border-radius: 8px;
   display: flex;
   flex-direction: column;
 }
@@ -100,4 +98,23 @@ button:hover {
 
 .talk-button:hover {
   box-shadow: 0 4px 12px rgba(150, 80, 255, 0.653);
+}
+
+p{
+  color: #fff;
+  font-size: 14px;
+  margin-top: 20px;
+  text-align: center;
+  font-weight: 100;
+
+}
+
+#chatBox{
+  height: 100%; 
+  border-width: 1px; 
+  border-style: solid; 
+  border-color: #2f2f2f;
+  border-radius: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
 }
